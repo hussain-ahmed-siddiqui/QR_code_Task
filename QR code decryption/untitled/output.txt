@@ -1,0 +1,3 @@
+Payload Format Indicator: 01
+Point of Initiation Method: 12
+FI Name: 1234567890
