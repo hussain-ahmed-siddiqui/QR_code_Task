@@ -27,7 +27,7 @@ public class TagParser {
         tagInfoMap.put(5, "Merchant Account Info for Mastercard");
         tagInfoMap.put(15, "Merchant Account Info for UnionPay");
         tagInfoMap.put(16, "Merchant Account Info for UnionPay");
-        tagInfoMap.put(27, "Merchant Account Info for Raast");
+        tagInfoMap.put(28, "Merchant Account Info for Raast");
         tagInfoMap.put(52, "Merchant Category Code");
         tagInfoMap.put(53, "Transaction Currency");
         tagInfoMap.put(54, "Transaction Amount");
@@ -64,15 +64,17 @@ public class TagParser {
 
     private void evaluateSubTags(){
         /*For Raast*/
-        String raast = foundTags.get(27);
+        String raast = foundTags.get(28);
 
         if(raast!=null){
-        String [] subTags = {"Sub Tag 1","Sub Tag 2"};
+            String [] subTags = new String[5];
         int s=0,e=2;
         int tagId, taglength;
+        HashMap<Integer,Boolean> foundTagslocal = new HashMap<>();
 
-        for(int i=0;i<2;i++){
+        for(int i=0;e<raast.length();i++){
             tagId = Integer.parseInt(raast.substring(s,e));
+            foundTagslocal.put(tagId, true);
             s=e;
             e+=2;
             taglength = Integer.parseInt(raast.substring(s,e));
@@ -82,9 +84,13 @@ public class TagParser {
             s=e;
             e+=2;
         }
+            raast=raast.concat("\nSub Tags:");
+            for (Map.Entry<Integer,Boolean>keys:
+                    foundTagslocal.entrySet()) {
+                raast=raast.concat("\n"+subTags[keys.getKey()]);
+            }
 
-        raast=raast.concat("\n"+subTags[0]+"\n"+subTags[1]);
-        foundTags.put(27,raast);
+        foundTags.put(28,raast);
         }
         /*For Additional Data*/
             String additionalData = foundTags.get(62);
@@ -93,26 +99,28 @@ public class TagParser {
                 int s=0,e=2;
                 int tagId, tagLength;
                 HashMap<Integer,Boolean> foundTagslocal = new HashMap<>();
-
-    for (int i = 0; i < 5; i++) {
-        tagId = Integer.parseInt(additionalData.substring(s, e));
-        foundTagslocal.put(tagId, true);
-        s = e;
-        e += 2;
-        tagLength = Integer.parseInt(additionalData.substring(s, e));
-        s = e;
-        e = e + tagLength;
-        subTags[tagId] = additionalData.substring(s, e);
-        s=e;
-        e+=2;
-    }
-
+                try{
+                for (int i = 0; e<additionalData.length(); i++) {
+                    tagId = Integer.parseInt(additionalData.substring(s, e));
+                    foundTagslocal.put(tagId, true);
+                    s = e;
+                    e += 2;
+                    tagLength = Integer.parseInt(additionalData.substring(s, e));
+                    s = e;
+                    e = e + tagLength;
+                    subTags[tagId] = additionalData.substring(s, e);
+                    s=e;
+                    e+=2;
+                }
+                additionalData=additionalData.concat("\nSub Tags:");
                 for (Map.Entry<Integer,Boolean>keys:
                      foundTagslocal.entrySet()) {
                     additionalData=additionalData.concat("\n"+subTags[keys.getKey()]);
                 }
                 foundTags.put(62,additionalData);
-            }
+            }catch (Exception ex){
+                    System.out.println(ex.getMessage());
+                }}
 
 
 
